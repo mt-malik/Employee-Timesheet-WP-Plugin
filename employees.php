@@ -1,12 +1,14 @@
 <?php
+session_start();
 global $wpdb;
-@session_start();
-$orders = $wpdb->prefix."orders";
+$employee = $wpdb->prefix."employee";
 if(isset($_GET['dlt_id']) && $_GET['dlt_id']!=""){
-    $get = $wpdb->get_row("select * from $orders where id='".$_GET['dlt_id']."'",ARRAY_A);
+    $get = $wpdb->get_row("select * from $employee where user_id='".$_GET['dlt_id']."'",ARRAY_A);
     if(!empty($get)){
-        $wpdb->query("delete from $orders where id='".$_GET['dlt_id']."'");
-        $_SESSION['suc'] = "Menu Item Deleted Successfully.";
+        $wpdb->query("delete from $employee where user_id='".$_GET['dlt_id']."'");
+        $del_id = $_GET['dlt_id'];
+        wp_delete_user($del_id);
+        $_SESSION['success'] = "Employee Deleted Successfully.";
     }
 }
 ?>
@@ -25,6 +27,9 @@ if(isset($_GET['dlt_id']) && $_GET['dlt_id']!=""){
     border: 1px solid #ccd0d4;
     box-shadow: 0 1px 1px rgba(0,0,0,.04);
     box-sizing: border-box;
+}
+table#example tr td {
+    text-align: center;
 }
 </style>
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
@@ -45,15 +50,15 @@ $(document).ready(function() {
     <h1>Employees List</h1>
     <div style="width: 100%; max-width: 1080px; float: left;">
     <?php
-     if(isset($_SESSION['suc'])){
-                ?>
-                    <div class="updated settings-error notice is-dismissible">
-                        <p><?php echo $_SESSION['suc']; ?></p>
-                    </div>
-                <?php
-                unset($_SESSION['suc']);
-            }
-            ?>
+     if(isset($_SESSION['success'])){
+        ?>
+            <div class="updated settings-error notice is-dismissible">
+                <p><?php echo $_SESSION['success']; ?></p>
+            </div>
+        <?php
+        unset($_SESSION['success']);
+    }
+    ?>
     </div>
     <table id="example" class="table table-striped table-bordered dt-responsive nowrap" style="width:100%">
         <thead>
@@ -62,37 +67,31 @@ $(document).ready(function() {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Address</th>
-                <th>Billing_address</th>
-                <th>Price</th>
-                <th>Status</th>
+                <th>Job Title</th>
+                <th>Image</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
             <?php
-                $orders_get = $wpdb->get_results("select * from $orders order by id desc",ARRAY_A);
-                foreach($orders_get as $k=>$order){
+                $employee_get = $wpdb->get_results("select * from $employee order by id desc",ARRAY_A);
+                foreach($employee_get as $k=>$employee_data){
                     ?>
-                        <tr id="r_<?php echo $order['id']; ?>">
-                            <td><?php echo $order['id']; ?></td>
-                            <td><?php 
-                                $u_data = json_decode($order['user_data'],true);
-                                echo $u_data['user_login']; ?></td>
-                            <td><?php echo $order['email']; ?></td>
-                            <td><?php echo $order['delivery_address']; ?></td>
-                            <td><?php echo $order['billing_address']; ?></td>
-                            <td>&#163;<?php echo number_format($order['price'],2); ?></td>
-                            <td><?php 
-                                $c_status = json_decode($order['charge'],true);
-                                if($c_status['paid'] == true){
-                                    echo "PAID";
-                                }else{
-                                    echo "PENDING";
-                                }
-                            ?></td>
+                        <tr id="r_<?php echo $employee_data['id']; ?>">
+                            <td><?php echo $employee_data['id']; ?></td>
+                            <td>
+                            <?php 
+                                $e_data = json_decode($employee_data['user_data'],true); 
+                                echo $e_data['user_login']; ?></td>
+                            <td><?php echo $e_data['user_email']; ?></td>
+                            <td><?php if($employee_data['address'] != ''){ echo $employee_data['address'];}else{ echo ' ';}  ?></td>
+                            <td><?php if($employee_data['job_title'] != ''){ echo $employee_data['job_title'];}else{ echo ' ';}  ?></td>
+                            <td><?php if($employee_data['image'] != ''){ $img_src = $employee_data['image'];}else{ $img_src = '';}  ?>
+                            <img src="<?php echo $img_src; ?>" height="200px"/></td>
                             <td> 
-                            <a href="admin.php?page=hn_view_order&order_id=<?php echo $order['id'] ?>">View</a> |
-                            <a href="admin.php?page=hn_orders&dlt_id=<?php echo $order['id'] ?>">Delete</a></td>
+                            <!-- <a href="admin.php?page=hn_view_order&order_id=<?php echo $employee_data['id'] ?>">View</a> | -->
+                            <a href="admin.php?page=et_employees&dlt_id=<?php echo $employee_data['user_id'] ?>">Delete</a>
+                            </td>
                         </tr>
                     <?php
                 } 
@@ -103,9 +102,8 @@ $(document).ready(function() {
             <th>Name</th>
             <th>Email</th>
             <th>Address</th>
-            <th>Billing_address</th>
-            <th>Price</th>
-            <th>Status</th>
+            <th>Job Title</th>
+            <th>Image</th>
             <th>Action</th>
         </tfoot>
     </table>

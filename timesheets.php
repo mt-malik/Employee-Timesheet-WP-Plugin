@@ -1,7 +1,7 @@
 <?php
 global $wpdb;
 @session_start();
-$orders = $wpdb->prefix."orders";
+$employee = $wpdb->prefix."employee";
 if(isset($_GET['dlt_id']) && $_GET['dlt_id']!=""){
     $get = $wpdb->get_row("select * from $orders where id='".$_GET['dlt_id']."'",ARRAY_A);
     if(!empty($get)){
@@ -69,30 +69,41 @@ $(document).ready(function() {
             </tr>
         </thead>
         <tbody>
-            <?php
-                $orders_get = $wpdb->get_results("select * from $orders order by id desc",ARRAY_A);
-                foreach($orders_get as $k=>$order){
+        <tr>
+        <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Billing_address</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+        <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Billing_address</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        <?php
+                $employee_get = $wpdb->get_results("select * from $employee order by id desc",ARRAY_A);
+                foreach($employee_get as $k=>$employee_data){
                     ?>
-                        <tr id="r_<?php echo $order['id']; ?>">
-                            <td><?php echo $order['id']; ?></td>
-                            <td><?php 
-                                $u_data = json_decode($order['user_data'],true);
-                                echo $u_data['user_login']; ?></td>
-                            <td><?php echo $order['email']; ?></td>
-                            <td><?php echo $order['delivery_address']; ?></td>
-                            <td><?php echo $order['billing_address']; ?></td>
-                            <td>&#163;<?php echo number_format($order['price'],2); ?></td>
-                            <td><?php 
-                                $c_status = json_decode($order['charge'],true);
-                                if($c_status['paid'] == true){
-                                    echo "PAID";
-                                }else{
-                                    echo "PENDING";
-                                }
-                            ?></td>
+                        <tr id="r_<?php echo $employee_data['id']; ?>">
+                            <td><?php echo $employee_data['user_id']; ?></td>
+                            <?php 
+                                $e_data = json_decode($employee_data['user_data'],true); ?>
+                            <td><?php echo $e_data['user_login']; ?></td>
+                            <td><?php echo $e_data['user_email']; ?></td>
+                            <td><?php echo $employee_data['job_title']; ?></td>
+                            <td><img src="<?php echo $employee_data['image']; ?>" height="200px"/></td>
                             <td> 
-                            <a href="admin.php?page=hn_view_order&order_id=<?php echo $order['id'] ?>">View</a> |
-                            <a href="admin.php?page=hn_orders&dlt_id=<?php echo $order['id'] ?>">Delete</a></td>
+                            <a href="admin.php?page=hn_view_order&order_id=<?php echo $employee_data['id'] ?>">View</a> |
+                            <a href="admin.php?page=hn_orders&dlt_id=<?php echo $employee_data['id'] ?>">Delete</a></td>
                         </tr>
                     <?php
                 } 

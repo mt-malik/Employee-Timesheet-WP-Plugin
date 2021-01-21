@@ -32,14 +32,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
   function wc_reg_plugin(){
     global $wpdb;
-    $hunger = $wpdb->prefix."hunger";
-    $orders = $wpdb->prefix."orders";
-   //  $wpdb->query("CREATE TABLE `$hunger` ( `id` INT NOT NULL AUTO_INCREMENT , `title` VARCHAR(100) NOT NULL , `description` VARCHAR(100) NOT NULL , `price` INT NOT NULL , `type` VARCHAR(100) NOT NULL , `image` VARCHAR(100) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
-   //  $wpdb->query("ALTER TABLE `$hunger` ADD `meal_type` VARCHAR(100) NOT NULL AFTER `type`;");
-   //  $wpdb->query("CREATE TABLE `$orders` ( `id` INT NOT NULL AUTO_INCREMENT , `email` VARCHAR(100) NOT NULL , `delivery_address` VARCHAR(100) NOT NULL , `second_delivery_address` VARCHAR(100) NULL DEFAULT NULL , `billing_address` VARCHAR(100) NOT NULL , `order_data` TEXT NOT NULL , `price` VARCHAR(10) NOT NULL , `ctmid` VARCHAR(256) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
-   //  $wpdb->query("ALTER TABLE `$orders` ADD `charge` TEXT NOT NULL AFTER `ctmid`;");
-   //  $wpdb->query("ALTER TABLE `$orders` ADD `user_data` TEXT NOT NULL AFTER `id`;");
-   //  $wpdb->query("ALTER TABLE `$orders` ADD `user_id` INT NOT NULL AFTER `id`;");
+    $employee = $wpdb->prefix."employee";
+    $timesheet = $wpdb->prefix."timesheet";
+    $wpdb->query("CREATE TABLE `$employee` ( `id` INT NOT NULL AUTO_INCREMENT , `job_title` VARCHAR(100) NOT NULL, `address` VARCHAR(100) NOT NULL , `image` VARCHAR(100) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
+    $wpdb->query("ALTER TABLE `$employee` ADD `user_data` TEXT NOT NULL AFTER `id`;");
+    $wpdb->query("ALTER TABLE `$employee` ADD `user_id` INT NOT NULL AFTER `id`;");
+    $wpdb->query("ALTER TABLE `$employee` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, CHANGE `job_title` `job_title` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL, CHANGE `address` `address` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL, CHANGE `image` `image` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;");
+   //  $wpdb->query("ALTER TABLE `$employee` ADD `meal_type` VARCHAR(100) NOT NULL AFTER `type`;");
+   //  $wpdb->query("CREATE TABLE `$timesheet` ( `id` INT NOT NULL AUTO_INCREMENT , `email` VARCHAR(100) NOT NULL , `delivery_address` VARCHAR(100) NOT NULL , `second_delivery_address` VARCHAR(100) NULL DEFAULT NULL , `billing_address` VARCHAR(100) NOT NULL , `order_data` TEXT NOT NULL , `price` VARCHAR(10) NOT NULL , `ctmid` VARCHAR(256) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
+   //  $wpdb->query("ALTER TABLE `$timesheet` ADD `charge` TEXT NOT NULL AFTER `ctmid`;");
+   //  $wpdb->query("ALTER TABLE `$timesheet` ADD `user_data` TEXT NOT NULL AFTER `id`;");
+   //  $wpdb->query("ALTER TABLE `$timesheet` ADD `user_id` INT NOT NULL AFTER `id`;");
     
     
   }
