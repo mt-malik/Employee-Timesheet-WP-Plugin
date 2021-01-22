@@ -47,7 +47,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     
   }
  function et_adminmenu(){
-    add_menu_page('Employee Timesheet','Employee Timesheet','administrator','et_settings','et_settings');
+    // add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position );
+    add_menu_page('Employee Timesheet','Employee Timesheet','administrator','et_settings','et_settings','dashicons-welcome-widgets-menus');
     add_submenu_page("et_settings","Employees","Employees","administrator","et_employees","et_employees");
     add_submenu_page("et_settings","TimeSheets","TimeSheets","administrator","et_timesheets","et_timesheets");
  }
@@ -76,11 +77,6 @@ function et_timesheets(){
    include_once("timesheets.php");
 }
 //////////////////
- function et_checkout(){
-    ob_start();
-    include_once('checkout.php');
-    return  ob_get_clean();
- }
  function et_ajax_page(){
     include_once("ajax.php");
     die();
