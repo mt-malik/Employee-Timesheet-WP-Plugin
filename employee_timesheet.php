@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  ////////////
 //  add_shortcode("hunger_checkout","et_checkout");
 //  add_shortcode("hunger_orders","et_my_orders");
-//  add_action("admin_enqueue_scripts","et_enqueScript");
+ add_action("admin_enqueue_scripts","et_enqueScript");
 //  add_action('wp_ajax_payment_charge','et_ajax_page');
 //  add_action('wp_ajax_nopriv_payment_charge','et_ajax_page');
   register_activation_hook( __FILE__, "wc_reg_plugin" );
@@ -38,8 +38,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     $wpdb->query("ALTER TABLE `$employee` ADD `user_id` INT NOT NULL AFTER `id`;");
     $wpdb->query("ALTER TABLE `$employee` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, CHANGE `job_title` `job_title` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL, CHANGE `address` `address` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL, CHANGE `image` `image` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;");
     $timesheet = $wpdb->prefix."timesheets";
-    $wpdb->query("CREATE TABLE `$timesheet` ( `id` INT NOT NULL AUTO_INCREMENT , `employee_id` INT NOT NULL , `date` DATE NOT NULL , `mon` VARCHAR(100) NULL DEFAULT NULL , `tue` VARCHAR(100) NULL DEFAULT NULL , `wed` VARCHAR(100) NULL DEFAULT NULL , `thu` VARCHAR(100) NULL DEFAULT NULL , `fri` VARCHAR(100) NULL DEFAULT NULL , `sat` VARCHAR(100) NULL DEFAULT NULL , `status` VARCHAR(255) NULL DEFAULT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
-   //  $wpdb->query("ALTER TABLE `$employee` ADD `meal_type` VARCHAR(100) NOT NULL AFTER `type`;");
+    $wpdb->query("CREATE TABLE `$timesheet` ( `id` INT NOT NULL AUTO_INCREMENT , `employee_id` INT NOT NULL , `date` DATE NOT NULL , `day` VARCHAR(100) NOT NULL , `status` VARCHAR(255) NULL DEFAULT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
+     $wpdb->query("ALTER TABLE `$timesheet` ADD `worked_hours` VARCHAR(100) NOT NULL AFTER `day`;");
+   //  $wpdb->query("CREATE TABLE `$timesheet` ( `id` INT NOT NULL AUTO_INCREMENT , `employee_id` INT NOT NULL , `date` DATE NOT NULL , `mon` VARCHAR(100) NULL DEFAULT NULL , `tue` VARCHAR(100) NULL DEFAULT NULL , `wed` VARCHAR(100) NULL DEFAULT NULL , `thu` VARCHAR(100) NULL DEFAULT NULL , `fri` VARCHAR(100) NULL DEFAULT NULL , `sat` VARCHAR(100) NULL DEFAULT NULL , `status` VARCHAR(255) NULL DEFAULT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
    //  $wpdb->query("ALTER TABLE `$timesheet` ADD `charge` TEXT NOT NULL AFTER `ctmid`;");
    //  $wpdb->query("ALTER TABLE `$timesheet` ADD `user_data` TEXT NOT NULL AFTER `id`;");
    //  $wpdb->query("ALTER TABLE `$timesheet` ADD `user_id` INT NOT NULL AFTER `id`;");
