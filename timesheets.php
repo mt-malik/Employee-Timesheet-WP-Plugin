@@ -2,10 +2,11 @@
 global $wpdb;
 @session_start();
 $employee = $wpdb->prefix."employee";
+$timesheet = $wpdb->prefix."timesheets";
 if(isset($_GET['dlt_id']) && $_GET['dlt_id']!=""){
-    $get = $wpdb->get_row("select * from $orders where id='".$_GET['dlt_id']."'",ARRAY_A);
+    $get = $wpdb->get_row("select * from $timesheet where id='".$_GET['dlt_id']."'",ARRAY_A);
     if(!empty($get)){
-        $wpdb->query("delete from $orders where id='".$_GET['dlt_id']."'");
+        $wpdb->query("delete from $timesheet where id='".$_GET['dlt_id']."'");
         $_SESSION['suc'] = "Menu Item Deleted Successfully.";
     }
 }
@@ -42,7 +43,7 @@ $(document).ready(function() {
 </script>
 
 <div class="outer">
-    <h1>Employees TimeSheets</h1>
+    <h1>Employee TimeSheets</h1>
     <div style="width: 100%; max-width: 1080px; float: left;">
     <?php
      if(isset($_SESSION['suc'])){
@@ -59,63 +60,51 @@ $(document).ready(function() {
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Address</th>
-                <th>Billing_address</th>
-                <th>Price</th>
+                <th>Employee Id</th>
+                <th>date</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
         <tr>
-        <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Address</th>
-            <th>Billing_address</th>
-            <th>Price</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-        <tr>
-        <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Address</th>
-            <th>Billing_address</th>
-            <th>Price</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
         <?php
-                $employee_get = $wpdb->get_results("select * from $employee order by id desc",ARRAY_A);
-                foreach($employee_get as $k=>$employee_data){
+                $sheets_get = $wpdb->get_results("select * from $timesheet order by id desc",ARRAY_A);
+                foreach($sheets_get as $k=>$sheets_data){
                     ?>
-                        <tr id="r_<?php echo $employee_data['id']; ?>">
-                            <td><?php echo $employee_data['user_id']; ?></td>
-                            <?php 
-                                $e_data = json_decode($employee_data['user_data'],true); ?>
-                            <td><?php echo $e_data['user_login']; ?></td>
-                            <td><?php echo $e_data['user_email']; ?></td>
-                            <td><?php echo $employee_data['job_title']; ?></td>
-                            <td><img src="<?php echo $employee_data['image']; ?>" height="200px"/></td>
+                        <tr id="r_<?php echo $sheets_data['id']; ?>">
+                            <td><?php echo $sheets_data['employee_id']; ?></td>
+                            <td><?php echo $sheets_data['date']; ?></td>
+                            <td><?php echo $sheets_data['mon']; ?></td>
+                            <td><?php echo $sheets_data['tue']; ?></td>
+                            <td><?php echo $sheets_data['wed']; ?></td>
+                            <td><?php echo $sheets_data['thu']; ?></td>
+                            <td><?php echo $sheets_data['fri']; ?></td>
+                            <td><?php echo $sheets_data['sat']; ?></td>
+                            <td><?php echo $sheets_data['status']; ?></td>
                             <td> 
-                            <a href="admin.php?page=hn_view_order&order_id=<?php echo $employee_data['id'] ?>">View</a> |
-                            <a href="admin.php?page=hn_orders&dlt_id=<?php echo $employee_data['id'] ?>">Delete</a></td>
+                            <a href="admin.php?page=hn_view_order&order_id=<?php echo $sheets_data['id'] ?>">View</a> |
+                            <a href="admin.php?page=hn_orders&dlt_id=<?php echo $sheets_data['id'] ?>">Delete</a></td>
                         </tr>
                     <?php
                 } 
             ?>
+        </tr>
         </tbody>
         <tfoot>
             <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Address</th>
-            <th>Billing_address</th>
-            <th>Price</th>
+            <th>Employee Id</th>
+            <th>date</th>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
             <th>Status</th>
             <th>Action</th>
         </tfoot>
