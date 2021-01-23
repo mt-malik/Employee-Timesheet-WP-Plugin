@@ -17,15 +17,24 @@ if(isset($_GET['dlt_id']) && $_GET['dlt_id']!=""){
     border-radius: 2px;
     background-color: #fff;
     float: left;
-    min-height: 650px;
-    height: auto;
-    
     position: relative;
     margin-top: 20px;
     padding: 2em;
     border: 1px solid #ccd0d4;
-    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    box-shadow: 0 1px 1px rgb(0 0 0 / 4%);
     box-sizing: border-box;
+}
+table#example p{
+    margin: 0;
+}
+div#example_length {
+    margin-bottom: 30px;
+}
+table#example td, table#example th {
+    border: 1px solid rgba(0,0,0,.1);
+}
+.dataTables_info, .dataTables_paginate {
+    margin-top: 20px;
 }
 table#example tr td {
     text-align: center;
@@ -46,7 +55,15 @@ $(document).ready(function() {
 </script>
 
 <div class="outer">
-    <h1>Employee TimeSheets</h1>
+    <?php
+        if($_GET['page'] == 'et_sheet_pending'){
+            echo "<h1>Pending TimeSheets</h1>";
+        }else if($_GET['page'] == 'et_sheet_rejected'){
+            echo "<h1>Rejected TimeSheets</h1>";
+        }else{
+            echo "<h1>Employee TimeSheets</h1>";
+        }
+    ?>
     <div style="width: 100%; max-width: 1080px; float: left;">
     <?php
      if(isset($_SESSION['success'])){
@@ -76,7 +93,7 @@ $(document).ready(function() {
             if($_GET['page'] == 'et_sheet_pending'){
                 $sheets_get = $wpdb->get_results("select * from $timesheet where status='Pending' order by status desc",ARRAY_A);
             }else if($_GET['page'] == 'et_sheet_rejected'){
-                $sheets_get = $wpdb->get_results("select * from $timesheet where status<>'Pending' order by status desc",ARRAY_A);
+                $sheets_get = $wpdb->get_results("select * from $timesheet where status<>'Pending' AND status<>'Accepted' order by status desc",ARRAY_A);
             }else{
                 $sheets_get = $wpdb->get_results("select * from $timesheet order by id desc",ARRAY_A);
             }
@@ -98,14 +115,17 @@ $(document).ready(function() {
                         <td><?php echo $sheets_data['worked_hours']; ?></td>
                         <td><?php 
                             if($sheets_data['status'] == 'Pending'){
-                                echo "<p style='color:green;'>".$sheets_data['status']."</p>";
-                            }else if($sheets_data['status'] != 'Pending'){
                                 echo "<p style='color:red;'>".$sheets_data['status']."</p>";
+                            }else if($sheets_data['status'] == 'Accepted'){
+                                echo "<p style='color:green;'>".$sheets_data['status']."</p>";
+                            }else{
+                                echo $sheets_data['status'];
                             }
                         ?></td>
                         <td> 
                         <a href="admin.php?page=et_add_sheet&sheet_id=<?php echo $sheets_data['id'] ?>">Edit</a> |
-                        <a href="admin.php?page=et_timesheet&dlt_id=<?php echo $sheets_data['id'] ?>">Delete</a></td>
+                        <a href="admin.php?page=et_timesheet&dlt_id=<?php echo $sheets_data['id'] ?>">Delete</a>
+                    </td>
                     </tr>
                 <?php
             } 

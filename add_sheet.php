@@ -63,7 +63,6 @@ if($_GET['sheet_id']!=""){
     border-radius: 2px;
     backgnumber_format-color: #fff;
     float: left;
-    min-height: 650px;
     height: auto;
     padding: 2px;
 }

@@ -18,7 +18,6 @@ if(isset($_GET['dlt_id']) && $_GET['dlt_id']!=""){
     border-radius: 2px;
     background-color: #fff;
     float: left;
-    min-height: 650px;
     height: auto;
     
     position: relative;
@@ -30,6 +29,12 @@ if(isset($_GET['dlt_id']) && $_GET['dlt_id']!=""){
 }
 table#example tr td {
     text-align: center;
+}
+table#example td, table#example th {
+    border: 1px solid rgba(0,0,0,.1);
+}
+.dataTables_info, .dataTables_paginate {
+    margin-top: 20px;
 }
 </style>
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
