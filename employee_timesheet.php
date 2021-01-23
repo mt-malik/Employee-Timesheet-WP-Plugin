@@ -91,10 +91,10 @@ function et_add_sheet(){
    include_once("add_sheet.php");
 }
 function et_sheet_pending(){
-   include_once("add_sheet.php");
+   include_once("timesheets.php");
 }
 function et_sheet_rejected(){
-   include_once("add_sheet.php");
+   include_once("timesheets.php");
 }
 //////////////////
  function et_ajax_page(){

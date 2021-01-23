@@ -7,7 +7,7 @@ if(isset($_GET['dlt_id']) && $_GET['dlt_id']!=""){
     $get = $wpdb->get_row("select * from $timesheet where id='".$_GET['dlt_id']."'",ARRAY_A);
     if(!empty($get)){
         $wpdb->query("delete from $timesheet where id='".$_GET['dlt_id']."'");
-        $_SESSION['suc'] = "Menu Item Deleted Successfully.";
+        $_SESSION['success'] = "Sheet Deleted Successfully.";
     }
 }
 ?>
@@ -26,6 +26,9 @@ if(isset($_GET['dlt_id']) && $_GET['dlt_id']!=""){
     border: 1px solid #ccd0d4;
     box-shadow: 0 1px 1px rgba(0,0,0,.04);
     box-sizing: border-box;
+}
+table#example tr td {
+    text-align: center;
 }
 </style>
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
@@ -46,13 +49,13 @@ $(document).ready(function() {
     <h1>Employee TimeSheets</h1>
     <div style="width: 100%; max-width: 1080px; float: left;">
     <?php
-     if(isset($_SESSION['suc'])){
+     if(isset($_SESSION['success'])){
                 ?>
                     <div class="updated settings-error notice is-dismissible">
-                        <p><?php echo $_SESSION['suc']; ?></p>
+                        <p><?php echo $_SESSION['success']; ?></p>
                     </div>
                 <?php
-                unset($_SESSION['suc']);
+                unset($_SESSION['success']);
             }
             ?>
     </div>
@@ -61,50 +64,59 @@ $(document).ready(function() {
             <tr>
                 <th>ID</th>
                 <th>Employee Id</th>
-                <th>date</th>
-                <th>Monday</th>
-                <th>Tuesday</th>
-                <th>Wednesday</th>
-                <th>Thursday</th>
-                <th>Friday</th>
+                <th>Date</th>
+                <th>Day</th>
+                <th>Worked Hours</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-        <tr>
         <?php
+            if($_GET['page'] == 'et_sheet_pending'){
+                $sheets_get = $wpdb->get_results("select * from $timesheet where status='Pending' order by status desc",ARRAY_A);
+            }else if($_GET['page'] == 'et_sheet_rejected'){
+                $sheets_get = $wpdb->get_results("select * from $timesheet where status<>'Pending' order by status desc",ARRAY_A);
+            }else{
                 $sheets_get = $wpdb->get_results("select * from $timesheet order by id desc",ARRAY_A);
-                foreach($sheets_get as $k=>$sheets_data){
-                    ?>
-                        <tr id="r_<?php echo $sheets_data['id']; ?>">
-                            <td><?php echo $sheets_data['employee_id']; ?></td>
-                            <td><?php echo $sheets_data['date']; ?></td>
-                            <td><?php echo $sheets_data['mon']; ?></td>
-                            <td><?php echo $sheets_data['tue']; ?></td>
-                            <td><?php echo $sheets_data['wed']; ?></td>
-                            <td><?php echo $sheets_data['thu']; ?></td>
-                            <td><?php echo $sheets_data['fri']; ?></td>
-                            <td><?php echo $sheets_data['sat']; ?></td>
-                            <td><?php echo $sheets_data['status']; ?></td>
-                            <td> 
-                            <a href="admin.php?page=hn_view_order&order_id=<?php echo $sheets_data['id'] ?>">View</a> |
-                            <a href="admin.php?page=hn_orders&dlt_id=<?php echo $sheets_data['id'] ?>">Delete</a></td>
-                        </tr>
-                    <?php
-                } 
+            }
+            
+            foreach($sheets_get as $k=>$sheets_data){
+                ?>
+                    <tr id="r_<?php echo $sheets_data['id']; ?>">
+                        <td><?php echo $sheets_data['id']; ?></td>
+                        <td><?php 
+                            $emp_get = $wpdb->get_results("select * from $employee where id='".$sheets_data['employee_id']."'",ARRAY_A);
+                            foreach($emp_get as $k=>$emp_data){
+                                $emp_jdata = json_decode($emp_data['user_data'],true);
+                                echo $emp_jdata['user_login'];
+                            } 
+                            ?>
+                        </td>
+                        <td><?php echo $sheets_data['date']; ?></td>
+                        <td><?php echo $sheets_data['day']; ?></td>
+                        <td><?php echo $sheets_data['worked_hours']; ?></td>
+                        <td><?php 
+                            if($sheets_data['status'] == 'Pending'){
+                                echo "<p style='color:green;'>".$sheets_data['status']."</p>";
+                            }else if($sheets_data['status'] != 'Pending'){
+                                echo "<p style='color:red;'>".$sheets_data['status']."</p>";
+                            }
+                        ?></td>
+                        <td> 
+                        <a href="admin.php?page=et_add_sheet&sheet_id=<?php echo $sheets_data['id'] ?>">Edit</a> |
+                        <a href="admin.php?page=et_timesheet&dlt_id=<?php echo $sheets_data['id'] ?>">Delete</a></td>
+                    </tr>
+                <?php
+            } 
             ?>
-        </tr>
         </tbody>
         <tfoot>
             <th>ID</th>
             <th>Employee Id</th>
-            <th>date</th>
-            <th>Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
+            <th>Date</th>
+            <th>Day</th>
+            <th>Worked Hours</th>
             <th>Status</th>
             <th>Action</th>
         </tfoot>

@@ -7,13 +7,13 @@ $employee = $wpdb->prefix."employee";
 if(isset($_REQUEST['cmd']) && $_REQUEST['cmd'] != ''){
  if($_REQUEST['cmd']=="add_sheet"){
     //if(!isset($_REQUEST['id'])){
-        $insert = "insert into $timesheet (title,meal_type,type,price,description,image) values(
-        '".$_REQUEST['title']."','".$_REQUEST['meal_type']."','".$_REQUEST['type']."','0','".$_REQUEST['description']."','".$_REQUEST['image']."')";
+        $insert = "insert into $timesheet (employee_id,date,day,worked_hours,status) values(
+        '".$_REQUEST['employee_id']."','".$_REQUEST['date']."','".$_REQUEST['day']."','".$_REQUEST['worked_hours']."','Pending')";
         
         if($wpdb->query($insert)){
-            $_SESSION['suc'] = "sheet Item Saved Successfully.";
+            $_SESSION['success'] = "TimeSheet Saved Successfully.";
         }else{
-             $_SESSION['eror'] = "An error occurred, Please try again. ";
+             $_SESSION['error'] = "An error occurred, Please try again. ";
         }
     /*}else{
         $update = "update $timesheet set title='".$_REQUEST['title']."', type='".$_REQUEST['type']."', price='".$_REQUEST['price']."',
@@ -22,12 +22,12 @@ if(isset($_REQUEST['cmd']) && $_REQUEST['cmd'] != ''){
   }  
   
   if($_REQUEST['cmd']=="update_sheet"){
-    $update = "update $timesheet set title='".$_REQUEST['title']."', meal_type='".$_REQUEST['meal_type']."', type='".$_REQUEST['type']."', price='0',
-        description='".$_REQUEST['description']."', image='".$_REQUEST['image']."' where id='".$_REQUEST['id']."'";
+    $update = "update $timesheet set employee_id='".$_REQUEST['employee_id']."', date='".$_REQUEST['date']."', day='".$_REQUEST['day']."',
+    worked_hours='".$_REQUEST['worked_hours']."', status='".$_REQUEST['status']."' where id='".$_REQUEST['id']."'";
         if($wpdb->query($update)){
-            $_SESSION['suc'] = "sheet Item Updated Successfully.";
+            $_SESSION['success'] = "TimeSheet Saved Successfully.";
         }else{
-             $_SESSION['eror'] = "An error occurred, Please try again. ";
+             $_SESSION['error'] = "An error occurred, Please try again. ";
         }
             
   }
@@ -91,21 +91,21 @@ if($id!=""){
     <tr>
         <td colspan="2">
              <?php
-            if(isset($_SESSION['suc'])){
+            if(isset($_SESSION['success'])){
                 ?>
                     <div class="updated settings-error notice is-dismissible">
-                        <p><?php echo $_SESSION['suc']; ?></p>
+                        <p><?php echo $_SESSION['success']; ?></p>
                     </div>
                 <?php
-                unset($_SESSION['suc']);
+                unset($_SESSION['success']);
             }
-             if(isset($_SESSION['eror'])){
+             if(isset($_SESSION['error'])){
                 ?>
                     <div class="update-message notice inline notice-warning notice-alt">
-                        <p><?php echo $_SESSION['eror']; ?></p>
+                        <p><?php echo $_SESSION['error']; ?></p>
                     </div>
                 <?php
-                unset($_SESSION['eror']);
+                unset($_SESSION['error']);
             }
         ?>
         </td>
@@ -113,13 +113,13 @@ if($id!=""){
     <tr>
         <td><b>Select Employee:</b></td>
         <td>
-        <select>
+        <select name="employee_id">
             <?php
             $sheets_get = $wpdb->get_results("select * from $employee order by id desc",ARRAY_A);
             foreach($sheets_get as $k=>$sheets_data){
                 $employee_data = json_decode($sheets_data['user_data'],true);
+                //$employee_idn = array( 'ID'=> $sheets_data['user_id'], 'user_login'=>$employee_data['user_login']);
             ?>
-            
             <option value="<?php echo $sheets_data['id']; ?>"><?php echo $employee_data['user_login']; ?></option>
             <?php
             }
@@ -158,7 +158,7 @@ if($id!=""){
     </tr>
     <tr>
         <td><b>Day:</b></td>
-        <td><input type="text" id="day_input" name="day" value="<?php echo $day ?>" class="inp_field" placeholder="Day" disabled/></td>
+        <td><input type="text" id="day_input" name="day" value="<?php echo $day ?>" class="inp_field" placeholder="Day" /></td>
     </tr>
     <!-- <input type="radio" name="day" value="<?php echo date("l"); ?>">
             <input type="radio" name="day" value="<?php echo date("l"); ?>">
@@ -176,7 +176,7 @@ if($id!=""){
         <td><input type="text" name="status" value="<?php echo $status ?>" placeholder="Status" class="inp_field" /></td>
     </tr>
     <?php
-    } 
+    }
     ?>
     <tr>
         <td colspan="2">
