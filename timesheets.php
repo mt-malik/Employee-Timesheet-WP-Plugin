@@ -80,7 +80,7 @@ $(document).ready(function() {
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Employee Id</th>
+                <th>Employee Name</th>
                 <th>Date</th>
                 <th>Day</th>
                 <th>Worked Hours</th>
@@ -123,7 +123,7 @@ $(document).ready(function() {
                             }
                         ?></td>
                         <td> 
-                        <a href="admin.php?page=et_add_sheet&sheet_id=<?php echo $sheets_data['id'] ?>">Edit</a> |
+                        <a href="admin.php?page=et_add_sheet&sheet_id=<?php echo $sheets_data['id'] ?>&user_login=<?php echo $emp_jdata['user_login'] ?>&user_id=<?php echo $emp_data['id'] ?>">Edit</a> |
                         <a href="admin.php?page=et_timesheet&dlt_id=<?php echo $sheets_data['id'] ?>">Delete</a>
                     </td>
                     </tr>
@@ -133,7 +133,7 @@ $(document).ready(function() {
         </tbody>
         <tfoot>
             <th>ID</th>
-            <th>Employee Id</th>
+            <th>Employee Name</th>
             <th>Date</th>
             <th>Day</th>
             <th>Worked Hours</th>

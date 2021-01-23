@@ -113,42 +113,27 @@ if($id!=""){
         <td><b>Select Employee:</b></td>
         <td>
         <select name="employee_id">
+            <option>Select Employee</option>
             <?php
             $sheets_get = $wpdb->get_results("select * from $employee order by id desc",ARRAY_A);
             foreach($sheets_get as $k=>$sheets_data){
                 $employee_data = json_decode($sheets_data['user_data'],true);
                 //$employee_idn = array( 'ID'=> $sheets_data['user_id'], 'user_login'=>$employee_data['user_login']);
-            ?>
-            <option value="<?php echo $sheets_data['id']; ?>"><?php echo $employee_data['user_login']; ?></option>
-            <?php
+                
+                $user_name = $_GET['user_login'];
+                $user_id = $_GET['user_id'];
+                if($sheets_data['id'] == $user_id){
+                    echo "<option selected='selected' value='$user_id'>$user_name</option>";
+                }else{
+                ?>
+                    <option value="<?php echo $sheets_data['id']; ?>"><?php echo $employee_data['user_login']; ?></option>
+                <?php
+                }
+                
             }
             ?>
         </select>
     </tr>
-    <!-- <tr>
-        <td><b>Type:</b></td>
-        <td>    
-            
-            <select name="type">
-                <option value="">Select Type</option>
-                <?php
-                $array = array(
-                    1=>"White Meats",
-                    2=>"Red Meat",
-                    3=>"Fish",
-                    4=>"Vegan",
-                    5=>"Low Calorie");
-                foreach($array as $k=>$v){
-                    if($k==$type){
-                        echo "<option selected='selected' value='$k'>$v</option>";
-                    }else{
-                        echo "<option value='$k'>$v</option>";
-                    }
-                }
-                ?>
-            </select>
-        </td>
-    </tr> -->
 
     <tr>
         <td><b>Date:</b></td>

@@ -3,16 +3,16 @@ global $wpdb;
 @session_start();
 $employee = $wpdb->prefix."employee";
 $timesheet = $wpdb->prefix."timesheets";
-if(isset($_GET['comment_id']) && $_GET['comment_id']!=""){
-    $comment = "update $timesheet set status='".$_REQUEST['comment']."' where id='".$_REQUEST['comment_id']."' ";
-    if($wpdb->query($comment)){
-        $_SESSION['success'] = "Comment is Sent.";
-        echo "<script type='text/javascript'>window.location.href='". $_REQUEST['re_url']."'</script>";  
-        exit();
+if(isset($_REQUEST['cmd']) && $_REQUEST['cmd'] != ''){
+    if($_REQUEST['cmd']=="comment"){
+        $comment = "update $timesheet set status='".$_REQUEST['comment']."' where id='".$_REQUEST['comment_id']."' ";
+        if($wpdb->query($comment)){
+            $_SESSION['success'] = "Comment is Sent.";
+        }
     }
 }
-if(isset($_REQUEST['comment_id']) && $_REQUEST['comment_id']!=""){
-    $accept = "update $timesheet set status='Accepted' where id='".$_REQUEST['accept_id']."'";
+if(isset($_GET['accept_id']) && $_GET['accept_id']!=""){
+    $accept = "update $timesheet set status='Accepted' where id='".$_GET['accept_id']."'";
     if($wpdb->query($accept)){
         $_SESSION['success'] = "Accepted.";
     }
@@ -38,9 +38,7 @@ div#example_length {
     margin-bottom: 30px;
 }
 .page-header {
-    padding-bottom: 9px;
-    margin: 0px 0 20px;
-    /* border-bottom: 1px solid #eee; */
+    margin: 20px 0;
     text-align: center;
 }
 .dataTables_info, .dataTables_paginate {
@@ -57,11 +55,11 @@ table#example p{
 }
 .com_btn{
     margin-left: -4px;
-    padding: 10px;
+    padding: 10px !important;
 }
 .acc_btn{
     margin-right: -4px;
-    padding: 10px;
+    padding: 10px !important;
 }
 .comment_sec .input-group-btn {
     position: relative;
@@ -116,10 +114,10 @@ $(document).ready(function() {
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Employee Id</th>
+                <th>Name</th>
                 <th>Date</th>
                 <th>Day</th>
-                <th>Worked Hours</th>
+                <th>Hours</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
@@ -162,12 +160,9 @@ $(document).ready(function() {
                                 <button type="button" class="sh_btn acc_btn"><a href="?accept_id=<?php echo $sheets_data['id'] ?>">Accept</a></button>
                                 <form class="comment_form" method="post" action="">
                                     <input type="text" class="form-control" name="comment" placeholder="Comment here">
-                                    <input type="hidden" name="re_url" value="<?php echo ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $uri_parts[0]; ?>">
                                     <input type="hidden" name="comment_id" value="<?php echo $sheets_data['id'] ?>"/>
-                                    <span class="input-group-btn">
-                                        <!-- <button type="submit" class="sh_btn com_btn"><a href="?comment_id=<?php echo $sheets_data['id'] ?>">Comment</a></button> -->
-                                        <input type="submit" class="sh_btn com_btn" value="Comment"/>
-                                    </span>
+                                    <input type="hidden" name="cmd" value="comment"/>
+                                    <input type="submit" class="sh_btn com_btn" value="Comment"/>
                                 </form>
                             </div>   
                         </td>
@@ -178,10 +173,10 @@ $(document).ready(function() {
         </tbody>
         <tfoot>
             <th>ID</th>
-            <th>Employee Id</th>
+            <th>Name</th>
             <th>Date</th>
             <th>Day</th>
-            <th>Worked Hours</th>
+            <th>Hours</th>
             <th>Status</th>
             <th>Action</th>
         </tfoot>
