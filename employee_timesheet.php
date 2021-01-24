@@ -15,14 +15,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  add_action('admin_menu','et_adminmenu');
  add_shortcode("employee_profile","et_profile_shortcode");
  add_shortcode("employee_timesheet","et_timesheet_shortcode");
- ////////////
-//  add_shortcode("hunger_checkout","et_checkout");
-//  add_shortcode("hunger_orders","et_my_orders");
  add_action("admin_enqueue_scripts","et_enqueScript");
-//  add_action('wp_ajax_payment_charge','et_ajax_page');
-//  add_action('wp_ajax_nopriv_payment_charge','et_ajax_page');
   register_activation_hook( __FILE__, "wc_reg_plugin" );
   register_activation_hook( __FILE__, 'my_plugin_activate' );
+//   add_action( 'init', 'create_post_type' );
+  add_action('init', 'create_timesheet_post_type');
  
  function et_init(){
     @session_start();
@@ -58,11 +55,93 @@ if ( ! defined( 'ABSPATH' ) ) {
     add_submenu_page("et_timesheet","Pending Sheets","Pending Sheets","administrator","et_sheet_pending","et_sheet_pending");
     add_submenu_page("et_timesheet","Rejected Sheets","Rejected Sheets","administrator","et_sheet_rejected","et_sheet_rejected");
  }
-//  function et_shortcode(){
-//     ob_start();
-//     include_once('shortcode.php');
-//     return  ob_get_clean();
-//  }
+ function set_default_meta($post_ID){
+   if ( $_GET['post_type'] == 'timesheet' ) {
+      // $current_field_value = get_post_meta($post_ID,'Monday',true);
+      $default_meta = ''; // value
+      // if ($current_field_value == '' && !wp_is_post_revision($post_ID)){
+      //       add_post_meta($post_ID,'Monday',$default_meta,true);
+      // }
+      add_post_meta($post_ID,'Monday',$default_meta,true);
+      add_post_meta($post_ID,'Tuesday',$default_meta,true);
+      add_post_meta($post_ID,'Wednesday',$default_meta,true);
+      add_post_meta($post_ID,'Thursday',$default_meta,true);
+      add_post_meta($post_ID,'Friday',$default_meta,true);
+      add_post_meta($post_ID,'Saturday',$default_meta,true);
+      add_post_meta($post_ID,'Sunday',$default_meta,true);
+      $args =array(
+               'key' => '_color',
+               'value' => 'white',
+               'compare' => '!='
+            );
+
+      $fields = array(
+				'_1' => 'a',
+				'_2' => 'b',
+				'_3' => 'c',
+				'_4' => 'd',
+				'_5' => 'e'
+         );
+      add_post_meta($post_ID,'Emp',$fields,true);
+      // //Add these to show in post
+      // $meta = get_post_meta(get_the_ID(), '', true);
+      // print_r($meta);
+   }
+   return $post_ID;
+}
+add_action('wp_insert_post','set_default_meta');
+
+
+function custom_element_grid_class_meta_box($post){
+   $meta_element_class = get_post_meta($post->ID, 'custom_element_grid_class_meta_box', true); //true ensures you get just one value instead of an array
+   ?>
+<label>Choose the size of the element : </label>
+
+<select name="custom_element_grid_class" id="custom_element_grid_class">
+   <option value="normal" <?php selected( $meta_element_class, 'normal' ); ?>>normal</option>
+   <option value="square" <?php selected( $meta_element_class, 'square' ); ?>>square</option>
+   <option value="wide" <?php selected( $meta_element_class, 'wide' ); ?>>wide</option>
+   <option value="tall" <?php selected( $meta_element_class, 'tall' ); ?>>tall</option>
+</select>
+<?php
+}
+
+//Show meta fields in the content of post
+function theme_slug_filter_the_content( $content ) {
+   // $custom_content = 'YOUR CONTENT GOES HERE';
+   // $custom_content .= $content;
+   // return $custom_content;
+   // $meta = get_post_meta(get_the_ID(), '', true);
+   // print_r($meta);
+   $post_metas = get_post_meta(get_the_ID());
+   $post_metas = array_combine(array_keys($post_metas), array_column($post_metas, '0'));
+   echo "<pre>";
+   print_r($post_metas);
+   echo "</pre>";
+}
+add_filter( 'the_content', 'theme_slug_filter_the_content' );
+
+function create_timesheet_post_type() {
+   $labels = array(
+      'name'=> __('TimeSheets'),
+      'singular_name'  => __('Timesheet'),
+      );
+      $args = array(
+      'labels'         => $labels,
+      'public'         => true,
+      'has_archive'    => true,
+      'menu_position'  => 5,
+      'description'    => 'Employee Worked per day.',
+      'rewrite'        =>
+      array('slug' => 'timesheets'),
+      'supports'       =>
+      array( 'title',
+      'comments', 'editor', 'custom-fields', 'timesheets'),
+      );
+       
+      register_post_type('Timesheet', $args);
+}
+
 //Main Plugin Menu
  function et_profile_shortcode(){
     ob_start();
