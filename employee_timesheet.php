@@ -69,20 +69,7 @@ if ( ! defined( 'ABSPATH' ) ) {
       add_post_meta($post_ID,'Friday',$default_meta,true);
       add_post_meta($post_ID,'Saturday',$default_meta,true);
       add_post_meta($post_ID,'Sunday',$default_meta,true);
-      $args =array(
-               'key' => '_color',
-               'value' => 'white',
-               'compare' => '!='
-            );
 
-      $fields = array(
-				'_1' => 'a',
-				'_2' => 'b',
-				'_3' => 'c',
-				'_4' => 'd',
-				'_5' => 'e'
-         );
-      add_post_meta($post_ID,'Emp',$fields,true);
       // //Add these to show in post
       // $meta = get_post_meta(get_the_ID(), '', true);
       // print_r($meta);
@@ -92,20 +79,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_action('wp_insert_post','set_default_meta');
 
 
-function custom_element_grid_class_meta_box($post){
-   $meta_element_class = get_post_meta($post->ID, 'custom_element_grid_class_meta_box', true); //true ensures you get just one value instead of an array
-   ?>
-<label>Choose the size of the element : </label>
-
-<select name="custom_element_grid_class" id="custom_element_grid_class">
-   <option value="normal" <?php selected( $meta_element_class, 'normal' ); ?>>normal</option>
-   <option value="square" <?php selected( $meta_element_class, 'square' ); ?>>square</option>
-   <option value="wide" <?php selected( $meta_element_class, 'wide' ); ?>>wide</option>
-   <option value="tall" <?php selected( $meta_element_class, 'tall' ); ?>>tall</option>
-</select>
-<?php
-}
-
 //Show meta fields in the content of post
 function theme_slug_filter_the_content( $content ) {
    // $custom_content = 'YOUR CONTENT GOES HERE';
@@ -113,14 +86,104 @@ function theme_slug_filter_the_content( $content ) {
    // return $custom_content;
    // $meta = get_post_meta(get_the_ID(), '', true);
    // print_r($meta);
-   $post_metas = get_post_meta(get_the_ID());
-   $post_metas = array_combine(array_keys($post_metas), array_column($post_metas, '0'));
+   if ( is_user_logged_in() ) {
+   if( ! is_singular( array( 'timesheets') ) ){
+      $post_metas = get_post_meta(get_the_ID());
+      $post_key = array_keys($post_metas);
+      $post_metas = array_combine($post_key, array_column($post_metas, '0'));
+   if($post_metas['employee'] == get_current_user_id()){  
+   ?>
+   <table>
+      <tr>
+         <th>Name</th>
+         <th>Value</th>
+      </tr>
+      <tr>
+         <th>Employee</th>
+         <td><?php 
+            $user_info = get_userdata($post_metas[$post_key['13']]);
+            echo $user_info->user_login; ?></td>
+      </tr>
+      <tr>
+         <th><?php echo $post_key['0']; ?></th>
+         <td><?php echo $post_metas[$post_key['0']]; ?></td>
+      </tr>
+      <tr>
+         <th><?php echo $post_key['1']; ?></th>
+         <td><?php echo $post_metas[$post_key['1']]; ?></td>
+      </tr>
+      <tr>
+         <th><?php echo $post_key['2']; ?></th>
+         <td><?php echo $post_metas[$post_key['2']]; ?></td>
+      </tr>
+      <tr>
+         <th><?php echo $post_key['3']; ?></th>
+         <td><?php echo $post_metas[$post_key['3']]; ?></td>
+      </tr>
+      <tr>
+         <th><?php echo $post_key['4']; ?></th>
+         <td><?php echo $post_metas[$post_key['4']]; ?></td>
+      </tr>
+      <tr>
+         <th><?php echo $post_key['5']; ?></th>
+         <td><?php echo $post_metas[$post_key['5']]; ?></td>
+      </tr>
+      <tr>
+         <th><?php echo $post_key['6']; ?></th>
+         <td><?php echo $post_metas[$post_key['6']]; ?></td>
+      </tr>
+   </table>
+   <?php
+   
    echo "<pre>";
    print_r($post_metas);
    echo "</pre>";
+}else{
+   echo "This post is not linked to you.";
+}
+   }
+}else{
+   echo "Login to view this.";
+}
 }
 add_filter( 'the_content', 'theme_slug_filter_the_content' );
 
+//ADD Select Field
+function wporg_add_custom_box() {
+   $screens = [ 'timesheet' ];
+   // $screens = array( 'post', 'page', 'book' );
+   foreach ( $screens as $screen ) {
+       add_meta_box(
+           'wporg_box_id',                 // Unique ID
+           'Custom Meta Box Title',      // Box title
+           'wporg_custom_box_html',  // Content callback, must be of type callable
+           $screen                            // Post type
+       );
+   }
+}
+add_action( 'add_meta_boxes', 'wporg_add_custom_box' );
+
+function wporg_custom_box_html( $post ) {
+   ?>
+   <label for="user">Select Employee</label>
+   <?php
+   $emp_get = get_post_meta( $post->ID, 'Employee', true );
+   $emp_id = $emp_get;
+      wp_dropdown_users( array( 'role' => 'custom_role', 'selected' => $emp_id ) );
+}
+//Update select field after edit
+function wporg_save_postdata( $post_id ) {
+   if ( array_key_exists( 'user', $_POST ) ) {
+       update_post_meta(
+           $post_id,
+           'Employee',
+           $_POST['user']
+       );
+   }
+}
+add_action( 'save_post', 'wporg_save_postdata' );
+
+//Creating Custom Post Type
 function create_timesheet_post_type() {
    $labels = array(
       'name'=> __('TimeSheets'),
