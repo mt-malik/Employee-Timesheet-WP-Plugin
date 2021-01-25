@@ -10,7 +10,7 @@ if(  get_post_type() == "timesheets"){
       $post_metas = get_post_meta(get_the_ID());
       $post_key = array_keys($post_metas);
       $post_metas = array_combine($post_key, array_column($post_metas, '0'));
-if($post_metas['Employee'] == get_current_user_id() or current_user_can('administrator')){  
+if($post_metas['Employee'] == get_current_user_id() or current_user_can('administrator')){ 
    ?>
    <table>
       <tr>
@@ -51,6 +51,34 @@ if($post_metas['Employee'] == get_current_user_id() or current_user_can('adminis
          <th><?php echo $post_key['6']; ?></th>
          <td><?php echo $post_metas[$post_key['6']]; ?></td>
       </tr>
+      <tr>
+      <?php
+        $votes = $post_metas['votes'];
+        $votes = ($votes == "") ? 0 : $votes;
+            ?>
+            <!-- This post has <span id='vote_counter'><?php echo $votes ?></span> votes<br> -->
+        <?php
+        $nonce = wp_create_nonce("my_user_vote_nonce");
+            $link = admin_url('admin-ajax.php?action=my_user_vote&post_id='.get_the_ID().'&nonce='.$nonce);
+            // echo '<a class="user_vote" data-nonce="' . $nonce . '" data-post_id="' . $post_ID . '" href="' . $link . '">vote for this article</a>';
+        ?>
+         <th>Reaction</th>
+         <td>
+            <span id='vote_counter'><?php echo '<a class="user_vote" data-nonce="' . $nonce . '" data-post_id="' . $post_ID . '" href="' . $link . '">Vote</a>'; echo '('.$votes.')'; ?></span>
+         <!-- <ul class="likes">
+                <li class="likes__item likes__item--like">
+                    <a href="#">
+                        Like (0)
+                    </a>
+                </li>
+                <li class="likes__item likes__item--dislike">
+                    <a href="#">
+                        Dislike (0)
+                    </a>
+                </li>
+            </ul> -->
+        </td>
+      </tr>
    </table>
    <?php
    
@@ -61,7 +89,7 @@ if($post_metas['Employee'] == get_current_user_id() or current_user_can('adminis
     if ( is_user_logged_in() ) {
         echo "This post is not linked to you.";
     }else{
-        
+
     }
 }
    }

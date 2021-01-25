@@ -2,70 +2,37 @@
 global $wpdb;
 $orders = $wpdb->prefix."orders";
 
-if(isset($_REQUEST['action'])){
-    if($_REQUEST['action']=="payment_charge"){
-       
-       require_once(plugin_dir_path(__FILE__).'stripe/config.php');
-       $token  = $_POST['stripeToken'];
-       $email  = $_POST['stripeEmail'];
-          
-            $customer = \Stripe\Customer::create(array(
-              'email' => $email,
-              'source'  => $token
-          ));
-          //$us = "100";
-          $price= $_POST['price'];
-          //$cutprice = $price * $us;
-          $charge = \Stripe\Charge::create(array(
-              'customer' => $customer->id,
-              'amount'   => $price,
-              'currency' => 'gbp'
-          ));
-          $ctmid= $charge['id'];
-          $ch = \Stripe\Charge::retrieve($ctmid);
-            $ch->refunds->create(array('amount' => $price));
-                
-          /*echo $customer->id;
-          echo "<pre>";
-          print_r($customer->id);
-          echo "</pre>";
-          echo $ctmid. "\n";
-          echo "<pre>";
-          print_r($charge);
-          echo "</pre>";
-          die();*/
-          if(!empty($ctmid)){
-                
-                $delivery_address = $_POST['delivery_address'];
-                $second_delivery_address = $_POST['second_delivery_address'];
-                $billing_address = $_POST['billing_address'];
-                $order_data = $_POST['order_data'];
-                
-                $amount = $charge['amount']/100;
-                
-                $insert = "insert into $orders(email,delivery_address,second_delivery_address,billing_address,price,order_data,ctmid) 
-                values('$email','$delivery_address','$second_delivery_address','$billing_address','$amount','$order_data','$ctmid')";
-                $qrun = mysqli_query($con,$insert);
-                if($qrun){
-                    //echo "Ordered Successfully";
-                    ?>
-                        <script type="text/javascript"> window.location.href = 'https://digital-panda.co.uk/hunger/thank-you/';</script>
-                    <?php
-                }else{
-                    //echo "Try Again!";
-                    ?>
-                        <script type="text/javascript"> window.location.href = 'https://digital-panda.co.uk/hunger/checkout-3/';</script>
-                    <?php
-                }
-          }else{
-            //echo "Please Pay The Money!";
-            ?>
-                <script type="text/javascript"> window.location.href = 'https://digital-panda.co.uk/hunger/checkout-3/';</script>
-            <?php
-          }
-                
-            /*$amount = $charge['amount']/100;
-          echo '<h1>Successfully charged $'.$amount.'!</h1>';*/
-    }
-}
+echo $_GET['post_id'];
+echo $_GET['nonce'];
+// die();
+if ( !wp_verify_nonce( $_REQUEST['nonce'], "my_user_vote_nonce")) {
+    exit("No naughty business please");
+ }   
+
+ $vote_count = get_post_meta($_REQUEST["post_id"], "votes", true);
+ $vote_count = ($vote_count == '') ? 0 : $vote_count;
+ $new_vote_count = $vote_count + 1;
+
+ $vote = update_post_meta($_REQUEST["post_id"], "votes", $new_vote_count);
+
+ if($vote === false) {
+    $result['type'] = "error";
+    $result['vote_count'] = $vote_count;
+ }
+ else {
+    $result['type'] = "success";
+    $result['vote_count'] = $new_vote_count;
+ }
+
+ if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+    $result = json_encode($result);
+    echo $result;
+ }
+ else {
+    header("Location: ".$_SERVER["HTTP_REFERER"]);
+ }
+
+ die();
+
+
 ?>

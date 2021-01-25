@@ -16,6 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  add_shortcode("employee_profile","et_profile_shortcode");
  add_shortcode("employee_timesheet","et_timesheet_shortcode");
  add_action("admin_enqueue_scripts","et_enqueScript");
+ add_action('wp_ajax_my_user_vote','et_ajax_page');
   register_activation_hook( __FILE__, "wc_reg_plugin" );
   register_activation_hook( __FILE__, 'my_plugin_activate' );
 //   add_action( 'init', 'create_post_type' );
@@ -69,7 +70,8 @@ if ( ! defined( 'ABSPATH' ) ) {
       add_post_meta($post_ID,'Friday',$default_meta,true);
       add_post_meta($post_ID,'Saturday',$default_meta,true);
       add_post_meta($post_ID,'Sunday',$default_meta,true);
-
+      
+      add_post_meta($post_ID,'votes',$default_meta,true);
       // //Add these to show in post
       // $meta = get_post_meta(get_the_ID(), '', true);
       // print_r($meta);
