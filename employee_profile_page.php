@@ -60,7 +60,7 @@ if(isset($_POST['cmd'])){
             $user_id = wp_create_user( $username, $password, $useremail );
             $user = get_user_by( 'id', $user_id );
             $user->remove_role( 'subscriber' );
-            $user->add_role( 'custom_role' );
+            $user->add_role( 'employee' );
 
             $cu_user_id = $user->ID;
             $user_data = json_encode($user->data);

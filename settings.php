@@ -52,9 +52,9 @@ global $wpdb;
             <th>Employee Profile Page</th>
             <td>[employee_profile]</td>
         </tr>
-        <tr>
+        <!-- <tr>
             <th>Employee TimeSheet Page</th>
             <td>[employee_timesheet]</td>
-        </tr>
+        </tr> -->
     </table>
 </div>
