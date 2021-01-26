@@ -12,6 +12,37 @@ if(  get_post_type() == "timesheets"){
       $post_metas = array_combine($post_key, array_column($post_metas, '0'));
 if($post_metas['Employee'] == get_current_user_id() or current_user_can('administrator')){ 
    ?>
+<style>
+.accept {
+  color: #FFF;
+  background: #44CC44;
+  padding: 15px 20px;
+  box-shadow: 0 4px 0 0 #2EA62E;
+}
+.accept:hover {
+  background: #6FE76F;
+  box-shadow: 0 4px 0 0 #7ED37E;
+  color: #fff;
+}
+.deny {
+  color: #FFF;
+  background: tomato;
+  padding: 15px 20px;
+  box-shadow: 0 4px 0 0 #CB4949;
+}
+.deny:hover {
+  background: rgb(255, 147, 128);
+  box-shadow: 0 4px 0 0 #EF8282;
+  color: #fff;
+}
+ul.likes {
+    padding-top: 15px;
+}
+ul.likes li {
+    list-style: none;
+    display: inline-block;
+}
+</style>
    <table>
       <tr>
          <th>Name</th>
@@ -24,38 +55,43 @@ if($post_metas['Employee'] == get_current_user_id() or current_user_can('adminis
             echo $user_info->user_login; ?></td>
       </tr>
       <tr>
-         <th><?php echo $post_key['0']; ?></th>
-         <td><?php echo $post_metas[$post_key['0']]; ?></td>
+         <th>Monday</th>
+         <td><?php echo $post_metas['Monday']; ?></td>
+         <!-- <td><?php echo $post_metas[$post_key['0']]; ?></td> -->
       </tr>
       <tr>
-         <th><?php echo $post_key['1']; ?></th>
-         <td><?php echo $post_metas[$post_key['1']]; ?></td>
+         <th>Tuesday</th>
+         <td><?php echo $post_metas['Tuesday']; ?></td>
       </tr>
       <tr>
-         <th><?php echo $post_key['2']; ?></th>
-         <td><?php echo $post_metas[$post_key['2']]; ?></td>
+         <th>Wednesday</th>
+         <td><?php echo $post_metas['Wednesday']; ?></td>
       </tr>
       <tr>
-         <th><?php echo $post_key['3']; ?></th>
-         <td><?php echo $post_metas[$post_key['3']]; ?></td>
+         <th>Thursday</th>
+         <td><?php echo $post_metas['Thursday']; ?></td>
       </tr>
       <tr>
-         <th><?php echo $post_key['4']; ?></th>
-         <td><?php echo $post_metas[$post_key['4']]; ?></td>
+         <th>Friday</th>
+         <td><?php echo $post_metas['Friday']; ?></td>
       </tr>
       <tr>
-         <th><?php echo $post_key['5']; ?></th>
-         <td><?php echo $post_metas[$post_key['5']]; ?></td>
+         <th>Saturday</th>
+         <td><?php echo $post_metas['Saturday']; ?></td>
       </tr>
       <tr>
-         <th><?php echo $post_key['6']; ?></th>
-         <td><?php echo $post_metas[$post_key['6']]; ?></td>
+         <th>Sunday</th>
+         <td><?php echo $post_metas['Sunday']; ?></td>
       </tr>
       <tr>
       <?php
-        $votes = $post_metas['votes'];
-        $votes = ($votes == "") ? 0 : $votes;
-            ?>
+      //   $votes = $post_metas['votes'];
+      //   $votes = ($votes == "") ? 0 : $votes;
+         $accept = $post_metas['accept'];
+         $accept = ($accept == "") ? 0 : $accept;
+         $reject = $post_metas['reject'];
+         $reject = ($reject == "") ? 0 : $reject;
+         ?>
             <!-- This post has <span id='vote_counter'><?php echo $votes ?></span> votes<br> -->
         <?php
         $nonce = wp_create_nonce("my_user_vote_nonce");
@@ -64,32 +100,25 @@ if($post_metas['Employee'] == get_current_user_id() or current_user_can('adminis
         ?>
          <th>Reaction</th>
          <td>
-            <span id='vote_counter'><?php echo '<a class="user_vote" data-nonce="' . $nonce . '" data-post_id="' . $post_ID . '" href="' . $link . '">Vote</a>'; echo '('.$votes.')'; ?></span>
-         <!-- <ul class="likes">
-                <li class="likes__item likes__item--like">
-                    <a href="#">
-                        Like (0)
-                    </a>
+            <!-- <span id='vote_counter'><?php echo '<a class="user_vote" data-nonce="' . $nonce . '" data-post_id="' . $post_ID . '" href="' . $link . '">Vote</a>'; echo '('.$votes.')'; ?></span> -->
+         <ul class="likes">
+                <li class="accept_item">
+                    <?php echo '<a class="user_vote accept" data-nonce="' . $nonce . '" data-post_id="' . $post_ID . '" href="' . $link . '&accept=1">Accept('.$accept.')</a>'; ?>
                 </li>
-                <li class="likes__item likes__item--dislike">
-                    <a href="#">
-                        Dislike (0)
-                    </a>
+                <li class="reject_item">
+                    <?php echo '<a class="user_vote deny" data-nonce="' . $nonce . '" data-post_id="' . $post_ID . '" href="' . $link . '&reject=1">Reject('.$reject.')</a> '; ?>
                 </li>
-            </ul> -->
+            </ul>
         </td>
       </tr>
    </table>
    <?php
-   
-//    echo "<pre>";
-//    print_r($post_metas);
-//    echo "</pre>";
+   // echo "<pre>";
+   // print_r($post_metas);
+   // echo "</pre>";
 }else{
     if ( is_user_logged_in() ) {
         echo "This post is not linked to you.";
-    }else{
-
     }
 }
    }

@@ -35,10 +35,11 @@ if ( ! defined( 'ABSPATH' ) ) {
     $wpdb->query("ALTER TABLE `$employee` ADD `user_data` TEXT NOT NULL AFTER `id`;");
     $wpdb->query("ALTER TABLE `$employee` ADD `user_id` INT NOT NULL AFTER `id`;");
     $wpdb->query("ALTER TABLE `$employee` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, CHANGE `job_title` `job_title` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL, CHANGE `address` `address` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL, CHANGE `image` `image` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;");
-    $timesheet = $wpdb->prefix."timesheets";
-    $wpdb->query("CREATE TABLE `$timesheet` ( `id` INT NOT NULL AUTO_INCREMENT , `employee_id` INT NOT NULL , `date` DATE NOT NULL , `day` VARCHAR(100) NOT NULL , `status` VARCHAR(255) NULL DEFAULT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
-     $wpdb->query("ALTER TABLE `$timesheet` ADD `worked_hours` VARCHAR(100) NOT NULL AFTER `day`;");
-   //  $wpdb->query("CREATE TABLE `$timesheet` ( `id` INT NOT NULL AUTO_INCREMENT , `employee_id` INT NOT NULL , `date` DATE NOT NULL , `mon` VARCHAR(100) NULL DEFAULT NULL , `tue` VARCHAR(100) NULL DEFAULT NULL , `wed` VARCHAR(100) NULL DEFAULT NULL , `thu` VARCHAR(100) NULL DEFAULT NULL , `fri` VARCHAR(100) NULL DEFAULT NULL , `sat` VARCHAR(100) NULL DEFAULT NULL , `status` VARCHAR(255) NULL DEFAULT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
+   //  $timesheet = $wpdb->prefix."timesheets";
+   //  $wpdb->query("CREATE TABLE `$timesheet` ( `id` INT NOT NULL AUTO_INCREMENT , `employee_id` INT NOT NULL , `date` DATE NOT NULL , `day` VARCHAR(100) NOT NULL , `status` VARCHAR(255) NULL DEFAULT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
+   //  $wpdb->query("ALTER TABLE `$timesheet` ADD `worked_hours` VARCHAR(100) NOT NULL AFTER `day`;");
+    $votes = $wpdb->prefix."votes";
+    $wpdb->query("CREATE TABLE `$votes` ( `id` INT NOT NULL AUTO_INCREMENT , `post_id` INT NOT NULL , `nonce` INT NOT NULL , `accept` INT NULL DEFAULT NULL , `reject` INT NULL DEFAULT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
    //  $wpdb->query("ALTER TABLE `$timesheet` ADD `charge` TEXT NOT NULL AFTER `ctmid`;");
    //  $wpdb->query("ALTER TABLE `$timesheet` ADD `user_data` TEXT NOT NULL AFTER `id`;");
    //  $wpdb->query("ALTER TABLE `$timesheet` ADD `user_id` INT NOT NULL AFTER `id`;");
@@ -71,7 +72,9 @@ if ( ! defined( 'ABSPATH' ) ) {
       add_post_meta($post_ID,'Saturday',$default_meta,true);
       add_post_meta($post_ID,'Sunday',$default_meta,true);
       
-      add_post_meta($post_ID,'votes',$default_meta,true);
+      // add_post_meta($post_ID,'votes',$default_meta,true);
+      // add_post_meta($post_ID,'accept',$default_meta,true);
+      // add_post_meta($post_ID,'reject',$default_meta,true);
       // //Add these to show in post
       // $meta = get_post_meta(get_the_ID(), '', true);
       // print_r($meta);
@@ -144,7 +147,36 @@ function create_timesheet_post_type() {
        
       register_post_type('Timesheets', $args);
 }
+//Check on posts
+ function target_main_category_query_with_conditional_tags( $query ) {
+   if(!current_user_can('administrator')){
+   if ( ! is_admin() && $query->is_main_query() ) {
+       // Not a query for an admin page.
+       // It's the main query for a front end page of your site.
+       if ( is_post_type_archive( 'timesheets' ) ) {
+         //Get original meta query
+         $meta_query = (array)$query->get('meta_query');
 
+         // Add your criteria
+         $meta_query[] = array(
+                  'key'     => 'Employee',
+                  'value'   => get_current_user_id(),
+         );    
+
+         // Set the meta query to the complete, altered query
+         $query->set('meta_query',$meta_query);
+         // It's the main query for a category archive.
+
+         // Let's change the query for category archives.
+         // $query->set( 'posts_per_page', 15 );
+         // echo '<pre>';
+         // var_dump($meta_query);
+         // echo '</pre>';
+       }
+   }
+   }
+}
+add_action( 'pre_get_posts', 'target_main_category_query_with_conditional_tags' );
 //Main Plugin Menu
  function et_profile_shortcode(){
     ob_start();
